@@ -2,6 +2,3 @@ type = "webpack"
 name = "drive"
 workers_dev = true
 webpack_config = "webpack.config.js"
-kv_namespaces = [
-    { binding = "sa", id = "2f04ca2b5bb944e5997f8bae694902ff" }
-]
