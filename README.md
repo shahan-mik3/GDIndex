@@ -35,3 +35,4 @@ You can set the the above as well as `CF_ACCOUNT_ID`, `CF_API_TOKEN` as secrets 
 You can create a random worker and set those names as random values, or you can `echo value | wrangler secret put key` after creating a dummy worker
 
 Create a namespace named `sa` with `wrangler kv:namespace create sa` and update the `wrangler.toml` based on the output it gives you
+
