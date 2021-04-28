@@ -10,52 +10,22 @@ class GoogleDrive {
 	async initializeClient() {
 		// any method that do api call must call this beforehand
 		if (Date.now() < this.expires) return
-		if (
-			USE_SERVICE_ACCOUNT
-		) {
-			const serviceAccountJSON = await sa.get('SERVICE_ACCOUNT_JSON', 'json')
-			const aud = serviceAccountJSON.token_uri
-			const jwttoken = await getTokenFromGCPServiceAccount({
-				serviceAccountJSON,
-				aud,
-				payloadAdditions: {
-					scope: 'https://www.googleapis.com/auth/drive'
+		const resp = await xf
+			.post('https://www.googleapis.com/oauth2/v4/token', {
+				urlencoded: {
+					client_id: this.auth.client_id,
+					client_secret: this.auth.client_secret,
+					refresh_token: this.auth.refresh_token,
+					grant_type: 'refresh_token'
 				}
 			})
-
-			const resp = await xf
-				.post(serviceAccountJSON.token_uri, {
-					urlencoded: {
-						grant_type:
-							'urn:ietf:params:oauth:grant-type:jwt-bearer',
-						assertion: jwttoken
-					}
-				})
-				.json()
-			this.client = xf.extend({
-				baseURI: 'https://www.googleapis.com/drive/v3/',
-				headers: {
-					Authorization: `Bearer ${resp.access_token}`
-				}
-			})
-		} else {
-			const resp = await xf
-				.post('https://www.googleapis.com/oauth2/v4/token', {
-					urlencoded: {
-						client_id: this.auth.client_id,
-						client_secret: this.auth.client_secret,
-						refresh_token: this.auth.refresh_token,
-						grant_type: 'refresh_token'
-					}
-				})
-				.json()
-			this.client = xf.extend({
-				baseURI: 'https://www.googleapis.com/drive/v3/',
-				headers: {
-					Authorization: `Bearer ${resp.access_token}`
-				}
-			})
-		}
+			.json()
+		this.client = xf.extend({
+			baseURI: 'https://www.googleapis.com/drive/v3/',
+			headers: {
+				Authorization: `Bearer ${resp.access_token}`
+			}
+		})
 		this.expires = Date.now() + 3500 * 1000 // normally, it should expiers after 3600 seconds
 	}
 	async listDrive() {
